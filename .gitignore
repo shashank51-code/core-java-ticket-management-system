@@ -32,3 +32,6 @@ desktop.ini
 
 # Logs
 *.log
+
+# Local QA report (do not publish)
+QA_Report.md
