@@ -1,4 +1,5 @@
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 class User {
@@ -59,32 +60,45 @@ class User {
 
                 System.out.println("Department: ");
                 String departent=sc.next();
-                
-                System.out.println("Select Role \n 1. Employee \n 2. Support Employee \n 3. Manager ");
-                int n=sc.nextInt();
-                String role="";
-                if(n==1)
+                int n=0; String role="";
+                while(true)
                 {
-                    role="EMPLOYEE";
 
-                }
-                else if(n==2)
-                {
-                    role="SUPPORT";
+                    
+                    System.out.println("Select Role \n 1. Employee \n 2. Support Employee \n 3. Manager ");
+                    try
+                    {
+                        n = sc.nextInt();
 
-                }
-                else if(n==3)
-                {
-                    role="MANAGER";
-                }
-                else
-                {
-                    System.out.println("invalid input");
+                        if(n == 1)
+                        {
+                            role = "EMPLOYEE";
+                            break;
+                        }
+                        else if(n == 2)
+                        {
+                            role = "SUPPORT";
+                            break;
+                        }
+                        else if(n == 3)
+                        
+                        {
+                            role = "MANAGER";
+                            break;
+                        }
+                        else
+                        {
+                            System.out.println("invalid input");
+                        }
+                    }
+                    catch(InputMismatchException e)
+                    {
+                        System.out.println("Please enter numbers only.");
+                        sc.nextLine();
+                    }
                 }
                 if(n>=1 && n<=3)
                 {
-
-                
                     Employee employee=new Employee(name,useremail,phone,departent,role);
                     for(int i=0;i<app.employees.length;i++)
                     {

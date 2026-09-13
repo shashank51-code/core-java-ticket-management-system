@@ -1,4 +1,5 @@
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
@@ -40,8 +41,22 @@ class Employee {
 
     void raiseTicket() {
         boolean added=false;
-        System.out.println("Enter Ticket ID:");
-        int ticketId = sc.nextInt();
+        int ticketId =0;
+        while(true)
+        {
+            try
+            {
+                System.out.println("Enter Ticket ID:");
+                ticketId = sc.nextInt();
+                break;
+            }
+            catch(InputMismatchException e)
+            {
+                System.out.println("please enter number only");
+                sc.nextLine();
+            }
+        }
+        
         System.out.println("Ticket Title");
         String ticketTitle = sc.next();
         System.out.println("Description");
@@ -83,53 +98,75 @@ class Employee {
     }
 
     void workOnTicket(Ticket ticket) {
-        if (ticket.assignedTo==this)
+        while(true)
         {
-            System.out.println("Ticket ID: " + ticket.ticketId);
-            System.out.println("Current Status: " + ticket.status);
-            
-            
-            if(ticket.status.equals("ASSIGNED"))
+
+        
+        try
+           {
+            if (ticket.assignedTo==this)
             {
-                System.out.println("1.Start Work");
-                int inputToStart=sc.nextInt();
-                if(inputToStart==1)
+                System.out.println("Ticket ID: " + ticket.ticketId);
+                System.out.println("Current Status: " + ticket.status);
+                
+            
+
+                
+                if(ticket.status.equals("ASSIGNED"))
                 {
-                    ticket.updateStatus("IN_PROGRESS",this.employeeName);
+                    System.out.println("1.Start Work");
+                    int inputToStart=sc.nextInt();
+                    if(inputToStart==1)
+                    {
+                        ticket.updateStatus("IN_PROGRESS",this.employeeName);
+                        break;
+                    }
+                    
+                }
+                else if(ticket.status.equals("IN_PROGRESS"))
+                {
+                    System.out.println("1.Resolve Ticket");
+                    int inputToProgess=sc.nextInt();
+                    if(inputToProgess==1)
+                    {
+                        ticket.updateStatus("RESOLVED",this.employeeName);
+                        break;
+                    }
+                    
+                }
+                else if(ticket.status.equals("RESOLVED"))
+                {
+                    System.out.println("1.Close Ticket");
+                    int inputresolved=sc.nextInt();
+                    if(inputresolved==1)
+                    {
+                        ticket.updateStatus("CLOSED",this.employeeName);
+                        break;
+                    }
+                    
+                }
+                else if(ticket.status.equals("CLOSED"))
+                {
+                    
+                    System.out.println("Ticket is already closed.");
+                    break;
+                }
+                else{
+                    System.out.println("invalid input");
                 }
                 
             }
-            else if(ticket.status.equals("IN_PROGRESS"))
+            else 
             {
-                System.out.println("1.Resolve Ticket");
-                int inputToProgess=sc.nextInt();
-                if(inputToProgess==1)
-                {
-                    ticket.updateStatus("RESOLVED",this.employeeName);
-                }
-                
+                System.out.println("You are not assigned to this ticket.");
+                break;
             }
-            else if(ticket.status.equals("RESOLVED"))
+            }
+            catch(InputMismatchException e)
             {
-                System.out.println("1.Close Ticket");
-                int inputresolved=sc.nextInt();
-                if(inputresolved==1)
-                {
-                    ticket.updateStatus("CLOSED",this.employeeName);
-                }
-                
+                System.out.println("please enter number only");
+                sc.nextLine();
             }
-            else if(ticket.status.equals("CLOSED"))
-            {
-                
-                System.out.println("Ticket is already closed.");
-            }
-            else{
-                System.out.println("invalid input");
-            }
-            
-        } else {
-            System.out.println("You are not assigned to this ticket.");
         }
     }
     void viewMyTickets()
@@ -221,42 +258,53 @@ class Employee {
 
             
             System.out.println("===== SUPPORT EMPLOYEE MENU =====");
-            System.out.println("1. View Assigned Tickets");
-            System.out.println("2. Work On Ticket \n 3.View My Workload");
-            System.out.println("4. Exit");
-            System.out.println("Enter choice:");
-            int input=sc.nextInt();
-            if(input==1)
+            try
             {
-              // viewAssignedTickets(employee);
-                manager.assignedTicket(this);
-            }
-            else if(input==2)
-            {
-                System.out.println("Enter Ticket ID: ");
-                int ticketId=sc.nextInt();
-                Ticket ticket = manager.findTicket(ticketId);
-                if(ticket == null)
-                {
-                    System.out.println("Ticket not found.");
-                }
-                else{
-                    workOnTicket(ticket);
 
+                
+                System.out.println("1. View Assigned Tickets");
+                System.out.println("2. Work On Ticket \n 3.View My Workload");
+                System.out.println("4. Exit");
+                System.out.println("Enter choice:");
+                int input=sc.nextInt();
+                if(input==1)
+                {
+                // viewAssignedTickets(employee);
+                    manager.assignedTicket(this);
+                }
+                else if(input==2)
+                {
+                    System.out.println("Enter Ticket ID: ");
+                    int ticketId=sc.nextInt();
+                    Ticket ticket = manager.findTicket(ticketId);
+                    if(ticket == null)
+                    {
+                        System.out.println("Ticket not found.");
+                    }
+                    else{
+                        workOnTicket(ticket);
+
+                    }
+                }
+                else if(input==3)
+                {
+                    supportWorkLoad(manager);
+                }
+                else if(input==4)
+                {
+                    break;
+                }
+                else
+                {
+                    System.out.println("Invalid Input.");
                 }
             }
-            else if(input==3)
+            catch(InputMismatchException e)
             {
-                supportWorkLoad(manager);
+                System.out.println("please enter only numbers");
+                sc.nextLine();
             }
-            else if(input==4)
-            {
-                break;
-            }
-            else
-            {
-                System.out.println("Invalid Input.");
-            }
+
         
         }
    }
@@ -265,31 +313,41 @@ class Employee {
     System.out.println("===== EMPLOYEE MENU =====");
     while(true)
     {
-        System.out.println("1. Raise Ticket\n2. View My Tickets \n 3. View Tickets By Priority \n 4. Exit");   
-        System.out.println("Enter choice: ");
-        int n=sc.nextInt();
-         if(n==1)
-         {
-            raiseTicket();
-         }
-         else if(n==2)
-         {
-            viewMyTickets();
-         }
-         else if(n==3)
-         {
-            System.out.println("enter priority: ");
-            String priority=sc.next();
-            viewTicketsByPriority(priority);
-         }
-         else if(n==4)
-         {
-            break;
-         }
-         else
-         {
-            System.out.println("Invalid input");
-         }
+        try
+        {
+
+        
+            System.out.println("1. Raise Ticket\n2. View My Tickets \n 3. View Tickets By Priority \n 4. Exit");   
+            System.out.println("Enter choice: ");
+            int n=sc.nextInt();
+            if(n==1)
+            {
+                raiseTicket();
+            }
+            else if(n==2)
+            {
+                viewMyTickets();
+            }
+            else if(n==3)
+            {
+                System.out.println("enter priority: ");
+                String priority=sc.next();
+                viewTicketsByPriority(priority);
+            }
+            else if(n==4)
+            {
+                break;
+            }
+            else
+            {
+                System.out.println("Invalid input");
+            }
+        }
+        catch(InputMismatchException e)
+        {
+            System.out.println("please enter only numbers.");
+            sc.nextLine();
+        }
     }
    }
 

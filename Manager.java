@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 class Manager {
 
@@ -211,6 +212,10 @@ class Manager {
     {
         while (true) 
         { 
+            try
+            {
+
+            
             System.out.println("===== MANAGER MENU ===== ");
             System.out.println("1.View Employee Tickets");                        
             System.out.println("2. View High/Critical Tickets");
@@ -315,6 +320,12 @@ class Manager {
             else 
             {
                 System.out.println("invalid input");
+            }
+            }
+            catch(InputMismatchException e)
+            {
+                System.out.println("please enter only numbers");
+                sc.nextLine();
             }
         }
     }
@@ -507,63 +518,4 @@ void supportWorkLoad()
         
     }
 }
-    public static void main(String[] args) {
-
-        // Employee rahul = new Employee(101, "Rahul", "rahul@gmail.com", "IT", "EMPLOYEE");
-        // Employee shashank = new Employee(102, "shashank", "shashank@gmail.com", "HR", "SUPPORT");
-        // Employee venky = new Employee(103,"Venky","venky@gmail","IT","SUPPORT");
-        System.out.println("===== TICKET MANAGEMENT SYSTEM ===== ");
-        while (true)
-        { 
-            System.out.println("\n 1. Login \n 2. Signup \n 3. Exit \n Enter choice:");
-            int userinput=sc.nextInt();
-            if(userinput==1)
-            {
-               // signup();
-            }
-            else if(userinput==2)
-            {
-
-            }
-            else if(userinput==3)
-            {
-                break;
-            }
-            else 
-            {
-                System.out.println("invalid input");
-            }
-        }
-        
-        Manager manager = new Manager(501, "suresh", "suresh@gmail.com", "HR", "MANAGER");
-        // manager.addEmployee(rahul);
-        // manager.addEmployee(shashank);
-        // manager.addEmployee(venky);
-
-
-        // manager.viewAllEmployees();
-        
-        // rahul.raiseTicket();
-        // manager.addSupportEmployee(shashank);
-        // manager.addSupportEmployee(venky);
-
-
-        // manager.viewSupportTeam();
-
-        // manager.viewEmployeeTickets(rahul);
-      
-
-        // System.out.println("=====ASSIGNING TICKET=====");
-        // System.out.println("ENTER TICKET ID: ");
-        // int ticketId=Manager.sc.nextInt();
-        // manager.assignTicket(ticketId,shashank);
-
-
-        // System.out.println("=====SUPPORT EMPLOYEE=====");
-        // shashank.showSupportMenu(manager);
-
-        // System.out.println("===== MANAGER =====");
-        // manager.showManagerMenu(rahul);
-        // rahul.tickets[0].displayHistory();
-    }
 }

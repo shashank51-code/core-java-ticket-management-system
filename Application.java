@@ -1,5 +1,5 @@
 
-import java.util.Scanner;
+import java.util.*;
 
 class Application
 {
@@ -16,24 +16,35 @@ class Application
       while(true)
       {
         System.out.println("1. Login \n2. Signup \n3. Exit \nEnter your choice:");
-        int input=sc.nextInt();
-        if(input==1)
+        try
         {
-            user.login(x);
+
+        
+            int input=sc.nextInt();
+            if(input==1)
+            {
+                user.login(x);
+            }
+            else if(input==2)
+            {
+                user.signup(x);
+            }
+            else if(input==3)
+            {
+                System.out.println("Thank you for using Ticket Management System!");
+                break;
+            }  
+            else
+            {
+                System.out.println("invalid input");
+            }
         }
-        else if(input==2)
+        catch(InputMismatchException e)
         {
-            user.signup(x);
+            System.out.println("Please enter numbers only.");
+            sc.nextLine();
         }
-        else if(input==3)
-        {
-            System.out.println("Thank you for using Ticket Management System!");
-            break;
-        }
-        else
-        {
-            System.out.println("invalid input");
-        }
+      
           
          
       }
