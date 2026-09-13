@@ -38,31 +38,36 @@ class Employee {
         System.out.println("Role: " + role);
 
     }
-
-    void raiseTicket() {
+    static int ticketCounter=1;
+    void raiseTicket() 
+    {
         boolean added=false;
-        int ticketId =0;
-        while(true)
-        {
-            try
-            {
-                System.out.println("Enter Ticket ID:");
-                ticketId = sc.nextInt();
-                break;
-            }
-            catch(InputMismatchException e)
-            {
-                System.out.println("please enter number only");
-                sc.nextLine();
-            }
-        }
+      
+        int ticketId =ticketCounter;
+        ticketCounter++;
         
         System.out.println("Ticket Title");
         String ticketTitle = sc.next();
+
         System.out.println("Description");
         String ticketDescription = sc.next();
-        System.out.println("Priority ");
-        String ticketPriority = sc.next();
+        
+        String ticketPriority = "";
+        while(true)
+        {
+            System.out.println("Priority ");
+            ticketPriority = sc.next();
+            if(ticketPriority.equalsIgnoreCase("LOW")||ticketPriority.equalsIgnoreCase("MEDIUM")||ticketPriority.equalsIgnoreCase("HIGH")||ticketPriority.equalsIgnoreCase("CRITICAL"))
+            {
+                break;
+            }
+            else
+            {
+                System.out.println("PLEASE ENTER LOW / MEDIUM / HIGH / CRITICAL");
+            }
+        }
+      
+
         System.out.println("createdBy: " + employeeName);
         Ticket newTicket = new Ticket(ticketId, ticketTitle, ticketDescription, ticketPriority, employeeName);
         for(int i=0;i<5;i++)

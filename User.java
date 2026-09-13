@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 class User {
 
+   
     int employeeId;
     String username;
     String password;
@@ -28,7 +29,7 @@ class User {
             System.out.println("username: ");
             String username=sc.next();
             boolean   usernameExists = false;
-            for(int i=0;i<=app.users.length-1;i++)
+            for(int i=0; i<app.users.length; i++)
             {
                 if(app.users[i] !=null)
                 {
@@ -97,71 +98,92 @@ class User {
                         sc.nextLine();
                     }
                 }
-                if(n>=1 && n<=3)
-                {
-                    Employee employee=new Employee(name,useremail,phone,departent,role);
-                    for(int i=0;i<app.employees.length;i++)
+                    if(n>=1 && n<=3)
                     {
-                        
-                        if(app.employees[i]==null)
+                        boolean managerSlotAvailable = true;
+
+                        if(role.equals("MANAGER"))
                         {
-                            app.employees[i]=employee;
-                            for(Manager manager:app.managers)
+                            managerSlotAvailable = false;
+
+                            for(Manager manager : app.managers)
                             {
-                                if(manager !=null)
+                                if(manager == null)
                                 {
-                                    
-                                    if(manager.department.equals(app.employees[i].getDepartment()))
-                                    {
-                                        manager.addEmployee(employee);
-                                        
-                                        break;
-                                    }
+                                    managerSlotAvailable = true;
+                                    break;
                                 }
                             }
-                            break;  
+
+                            if(!managerSlotAvailable)
+                            {
+                                System.out.println("Manager capacity full");
+                                return;
+                            }
                         }
-                    }
-                    
+
+                        Employee employee = new Employee(name,useremail,phone,departent,role);
+
+                        for(int i=0;i<app.employees.length;i++)
+                        {
+                            if(app.employees[i] == null)
+                            {
+                                app.employees[i] = employee;
+
+                                for(Manager manager : app.managers)
+                                {
+                                    if(manager != null)
+                                    {
+                                        if(manager.department.equals(employee.getDepartment()))
+                                        {
+                                            manager.addEmployee(employee);
+                                            break;
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+
                         if(role.equals("SUPPORT"))
                         {
-                            for(int i=0;i<=app.supportTeam.length-1;i++)
+                            for(int i=0;i<app.supportTeam.length;i++)
                             {
-                                 if(app.supportTeam[i]==null)
+                                if(app.supportTeam[i] == null)
                                 {
+                                    app.supportTeam[i] = employee;
 
-                                    app.supportTeam[i]=employee;
-                                    for(Manager manager:app.managers)
+                                    for(Manager manager : app.managers)
                                     {
-                                        if(manager !=null)
+                                        if(manager != null)
                                         {
                                             if(manager.department.equals(employee.getDepartment()))
                                             {
-                                                manager.addSupportEmployee(employee);                                                break;
+                                                manager.addSupportEmployee(employee);
+                                                break;
                                             }
                                         }
                                     }
                                     break;
                                 }
                             }
-                           
                         }
                         else if(role.equals("MANAGER"))
                         {
-                           
-                            int employeeId=employee.getEmployeeId();
-                            Manager manager=new Manager(employeeId,name,useremail,departent,role);
+                            int employeeId = employee.getEmployeeId();
+
+                            Manager manager = new Manager(employeeId,name,useremail,departent,role);
+
                             for(int i=0;i<app.managers.length;i++)
                             {
-                                if(app.managers[i]==null)
+                                if(app.managers[i] == null)
                                 {
-                                    app.managers[i]=manager;
-                                    for(Employee emp:app.employees)
-                                    {
-                                        if(emp !=null)
-                                        {
+                                    app.managers[i] = manager;
 
-                                        
+                                    for(Employee emp : app.employees)
+                                    {
+                                        if(emp != null)
+                                        {
                                             if(manager.department.equals(emp.getDepartment()))
                                             {
                                                 if(emp.getRole().equals("SUPPORT"))
@@ -172,26 +194,43 @@ class User {
                                                 {
                                                     manager.addEmployee(emp);
                                                 }
-                                                
                                             }
                                         }
                                     }
                                     break;
                                 }
                             }
-                            
                         }
-                    int employeeId=employee.getEmployeeId();
-                    User user=new User(employeeId, username, userpassword);
-                    for(int i=0;i<=app.users.length-1;i++)
-                    {
-                        if(app.users[i] ==null)
+
+                        int employeeId = employee.getEmployeeId();
+                        boolean userSlotAvailable=false;
+                        for(int i=0;i<app.users.length;i++)
                         {
-                            app.users[i]=user;
-                            break;
+                            if(app.users[i]==null)
+                            {
+                                userSlotAvailable=true;
+                                break;
+                            }
                         }
+                        if(!userSlotAvailable)
+                        {
+                            System.out.println("User capacity full");
+                            return;
+                        }
+                        User user = new User(employeeId,username,userpassword);
+
+                        for(int i=0;i<app.users.length;i++)
+                        {
+                            if(app.users[i] == null)
+                            {
+                                app.users[i] = user;
+                                break;
+                            }
+                        }
+
+                        System.out.println("Signup successful!");
                     }
-                    System.out.println("Signup successful!");
+                    
                 }
             }
     }
@@ -202,6 +241,7 @@ class User {
         String username=sc.next();
         System.out.println("enter password");
         String password=sc.next();
+       
         for(int i=0;i<=app.users.length-1;i++)
         {
             if(app.users[i] !=null)
@@ -226,32 +266,44 @@ class User {
                                 }
                                 else if(role.equals("SUPPORT"))
                                 {
+                                    boolean managerfound=false;
                                     for(Manager manager : app.managers)
                                     {
                                         if(manager != null)
                                         {
                                             if(manager.department.equals(emp.getDepartment()))
                                             {
+                                                managerfound=true;
                                                 emp.showSupportMenu(manager);
                                                 break;
                                             }
                                            
                                         }
                                     }
+                                    if(!managerfound)
+                                    {
+                                        System.out.println("Support manager not found");
+                                    }
                                 }
                             
                                 else if(role.equals("MANAGER"))
                                 {
+                                    boolean managerfound=false;
                                     for(Manager manager : app.managers)
                                         {
                                             if(manager != null)
                                             {
                                                 if(manager.managerId == employeeId)
                                                 {
+                                                    managerfound=true;
                                                     manager.showManagerMenu(app);
                                                     break;
                                                 }
                                             }
+                                        }
+                                        if(!managerfound)
+                                        {
+                                            System.out.println("Manager account not found");
                                         }
                                 
                                 }
@@ -267,4 +319,4 @@ class User {
             System.out.println("Invalid username or password");
         }
     }
-}
+

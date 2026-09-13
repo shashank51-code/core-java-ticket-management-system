@@ -46,13 +46,21 @@ class Manager {
     void assignTicket(Ticket ticket, Employee supportEmployee) {
         if ("SUPPORT".equals(supportEmployee.getRole())) {
 
-            ticket.assignedTo = supportEmployee;
-            if (ticket.updateStatus("ASSIGNED",managerName)) {
-                System.out.println("Ticket assigned successfully.");
-                System.out.println("Assigned To: " + supportEmployee.getEmployeeName());
+            if(department.equals(supportEmployee.getDepartment()))
+            {
+                 ticket.assignedTo = supportEmployee;
+            
+           
+                if (ticket.updateStatus("ASSIGNED",managerName)) {
+                    System.out.println("Ticket assigned successfully.");
+                    System.out.println("Assigned To: " + supportEmployee.getEmployeeName());
 
+                }
             }
-
+            else
+            {
+                System.out.println("Cannot assign ticket to different department");
+            }
         } else {
             System.out.println("Employee is not a SUPPORT employee.\n Ticket was not assigned.");
         }
@@ -62,10 +70,9 @@ class Manager {
     {
         if("SUPPORT".equals(newSupportEmployee.getRole()))
         {
-            if(ticket.status.equals("CLOSED"))
+            if(ticket.status.equals("CLOSED")||ticket.status.equals("RESOLVED"))
             {
-                System.out.println("Closed ticket cannot be reassigned");
-                
+                System.out.println("Resolved or closed ticket cannot be reassigned");                
             }
             else
             {
@@ -78,10 +85,21 @@ class Manager {
                     }
                     else
                     {
-                            System.out.println("New: \n Assigned To: "+newSupportEmployee.getEmployeeName());
-                            ticket.assignedTo = newSupportEmployee;
-                            System.out.println("Ticket reassigned successfully.");
-                    }  
+                            String oldEmployee =ticket.assignedTo.getEmployeeName();
+                            if(department.equals(newSupportEmployee.getDepartment()))
+                            {
+                                System.out.println("New: \n Assigned To: "+newSupportEmployee.getEmployeeName());
+
+                                ticket.assignedTo = newSupportEmployee;
+                                ticket.addHistory("REASSIGNED",oldEmployee + " to " + newSupportEmployee.getEmployeeName());
+                                System.out.println("Ticket reassigned successfully.");
+                            }
+                            else
+                            {
+                                System.out.println("Ticket was not reassigned.");
+                            }  
+                    }
+                            
                 }
                 else
                 {

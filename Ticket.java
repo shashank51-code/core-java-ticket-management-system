@@ -1,5 +1,4 @@
 
-import java.util.Scanner;
 
 class Ticket {
 
@@ -87,11 +86,7 @@ class Ticket {
 
     void displaySummary()
     {
-        System.out.println("Ticket ID: "+ticketId+
-                            "\n Title: "+title+
-                            "\n Priority: "+priority+
-                            "\n Status: "+status+
-                            "\n Created By: "+createdBy);
+        System.out.println("Ticket ID: "+ticketId+"\n Title: "+title+"\n Priority: "+priority+"\n Status: "+status+"\n Created By: "+createdBy);
                             if(assignedTo==null)
                             {
                                 System.out.println("Assigned To: Not Assigned");
@@ -130,8 +125,5 @@ class Ticket {
             System.out.println("No history found.");
         }
     }
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-    }
+   
 }
