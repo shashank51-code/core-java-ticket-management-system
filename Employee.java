@@ -11,20 +11,21 @@ class Employee {
     private String phone;
     private String department;
     private String role;
+    private Scanner sc;
     Ticket[] tickets = new Ticket[5];
-    static int counter;
+    static int counter=1;
     
     
-    static Scanner sc = new Scanner(System.in);
 
 
-    public Employee(String employeeName, String email,String phone, String department, String role) {
+    public Employee(String employeeName, String email,String phone, String department, String role,Scanner sc) {
         this.employeeId = counter++;
         this.employeeName = employeeName;
         this.email = email;
         this.phone=phone;
         this.department = department;
         this.role = role;
+        this.sc=sc;
     }
 
 
@@ -43,14 +44,28 @@ class Employee {
     {
         boolean added=false;
       
-        int ticketId =ticketCounter;
-        ticketCounter++;
+        // int ticketId =ticketCounter;
+        // ticketCounter++;
         
         System.out.println("Ticket Title");
-        String ticketTitle = sc.next();
+        sc.nextLine();
+        String ticketTitle = "";
+        while(true)
+        {
+            ticketTitle=sc.nextLine();
+            if(!ticketTitle.trim().isEmpty())
+            {
+                break;
+            }
+            else
+            {
+                System.out.println("Ticket title cannot be empty. Please enter a title.");
+            }
+        }
 
         System.out.println("Description");
-        String ticketDescription = sc.next();
+     
+        String ticketDescription = sc.nextLine();
         
         String ticketPriority = "";
         while(true)
@@ -68,26 +83,28 @@ class Employee {
         }
       
 
-        System.out.println("createdBy: " + employeeName);
-        Ticket newTicket = new Ticket(ticketId, ticketTitle, ticketDescription, ticketPriority, employeeName);
+        
         for(int i=0;i<5;i++)
         {
             if(tickets[i]==null)
             {
+                int ticketId=ticketCounter;
+                ticketCounter++;
+                System.out.println("createdBy: " + employeeName);
+                Ticket newTicket = new Ticket(ticketId, ticketTitle, ticketDescription, ticketPriority, employeeName);
+
                 tickets[i]=newTicket;
                 //Employee.history.add=newTicket;
                 added=true;
+
+                newTicket.displayTicket();
                 break;
                 
             }
            
         }
-        if(added)
+        if(!added)
         {
-            newTicket.displayTicket();
-
-        }
-        else{
             System.out.println("Maximum ticket limit reached.");
         }
          
@@ -98,7 +115,7 @@ class Employee {
             ticket.displayTicket();
 
         } else {
-            System.out.println("No tickets assigned");
+            System.out.println("No Tickets Assigned");
         }
     }
 
@@ -126,6 +143,10 @@ class Employee {
                         ticket.updateStatus("IN_PROGRESS",this.employeeName);
                         break;
                     }
+                    else
+                    {
+                        System.out.println("invalid input");
+                    }
                     
                 }
                 else if(ticket.status.equals("IN_PROGRESS"))
@@ -137,6 +158,10 @@ class Employee {
                         ticket.updateStatus("RESOLVED",this.employeeName);
                         break;
                     }
+                    else
+                    {
+                        System.out.println("invalid input");
+                    }
                     
                 }
                 else if(ticket.status.equals("RESOLVED"))
@@ -147,6 +172,10 @@ class Employee {
                     {
                         ticket.updateStatus("CLOSED",this.employeeName);
                         break;
+                    }
+                    else
+                    {
+                        System.out.println("invalid input");
                     }
                     
                 }

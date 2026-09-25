@@ -11,7 +11,7 @@ class Application
 
   public static void main(String[] args) {
       Application x=new Application();
-      User user = new User(0, "", "");
+      
       System.out.println("============================== \n   TICKET MANAGEMENT SYSTEM \n==============================");
       while(true)
       {
@@ -23,11 +23,11 @@ class Application
             int input=sc.nextInt();
             if(input==1)
             {
-                user.login(x);
+                new User(0, "", "").login(x);
             }
             else if(input==2)
             {
-                user.signup(x);
+                new User(0, "", "").signup(x);
             }
             else if(input==3)
             {
@@ -43,6 +43,11 @@ class Application
         {
             System.out.println("Please enter numbers only.");
             sc.nextLine();
+        }
+        catch(NoSuchElementException e)
+        {
+            System.out.println("No more input available. Exiting...");
+            break;
         }
       
           

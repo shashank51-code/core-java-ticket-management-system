@@ -1,4 +1,5 @@
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 class Manager {
 
@@ -7,15 +8,17 @@ class Manager {
     String email;
     String department;
     String role;
+    private Scanner sc;
     Employee[] supportTeam = new Employee[5];
     Employee[] employee=new Employee[10];
-    static Scanner sc=new Scanner(System.in);
-    public Manager(int managerId, String managerName, String email, String department, String role) {
+    public Manager(int managerId, String managerName, String email, String department, String role,Scanner sc) {
         this.managerId = managerId;
         this.managerName = managerName;
         this.email = email;
         this.department = department;
         this.role = role;
+
+        this.sc=sc;
     }
 
     void displayManager() {
@@ -44,76 +47,125 @@ class Manager {
     }
 
     void assignTicket(Ticket ticket, Employee supportEmployee) {
-        if ("SUPPORT".equals(supportEmployee.getRole())) {
+    if ("SUPPORT".equals(supportEmployee.getRole())) {
 
-            if(department.equals(supportEmployee.getDepartment()))
-            {
-                 ticket.assignedTo = supportEmployee;
-            
-           
-                if (ticket.updateStatus("ASSIGNED",managerName)) {
-                    System.out.println("Ticket assigned successfully.");
-                    System.out.println("Assigned To: " + supportEmployee.getEmployeeName());
+        if (department.equalsIgnoreCase(supportEmployee.getDepartment())) {
 
+            boolean added = false;
+
+            for (int i = 0; i < supportEmployee.tickets.length; i++) {
+                if (supportEmployee.tickets[i] == null) {
+                    supportEmployee.tickets[i] = ticket;
+                    added = true;
+                    break;
                 }
             }
-            else
-            {
-                System.out.println("Cannot assign ticket to different department");
+
+            if (added) {
+                ticket.assignedTo = supportEmployee;
+
+                if (ticket.updateStatus("ASSIGNED", managerName)) {
+                    System.out.println("Ticket assigned successfully.");
+                    System.out.println("Assigned To: " + supportEmployee.getEmployeeName());
+                }
+            } else {
+                System.out.println("Support employee ticket list is full.");
             }
+
         } else {
-            System.out.println("Employee is not a SUPPORT employee.\n Ticket was not assigned.");
+            System.out.println("Cannot assign ticket to different department");
         }
 
+    } else {
+        System.out.println("Employee is not a SUPPORT employee.");
+        System.out.println("Ticket was not assigned.");
     }
+}
     void reassignTicket(Ticket ticket, Employee newSupportEmployee)
     {
-        if("SUPPORT".equals(newSupportEmployee.getRole()))
+    if("SUPPORT".equals(newSupportEmployee.getRole()))
+    {
+        if(ticket.status.equals("CLOSED") || ticket.status.equals("RESOLVED"))
         {
-            if(ticket.status.equals("CLOSED")||ticket.status.equals("RESOLVED"))
+            System.out.println("Resolved or closed ticket cannot be reassigned");
+        }
+        else
+        {
+            if(ticket.assignedTo != null)
             {
-                System.out.println("Resolved or closed ticket cannot be reassigned");                
-            }
-            else
-            {
-                if(ticket.assignedTo !=null)
-                {
-                    System.out.println("Old: \n Assigned To: "+ticket.assignedTo.getEmployeeName());
-                    if(ticket.assignedTo==newSupportEmployee)
-                    {
-                        System.out.println("Cannot reassign to the same employee.");
-                    }
-                    else
-                    {
-                            String oldEmployee =ticket.assignedTo.getEmployeeName();
-                            if(department.equals(newSupportEmployee.getDepartment()))
-                            {
-                                System.out.println("New: \n Assigned To: "+newSupportEmployee.getEmployeeName());
+                Employee oldSupportEmployee = ticket.assignedTo;
 
-                                ticket.assignedTo = newSupportEmployee;
-                                ticket.addHistory("REASSIGNED",oldEmployee + " to " + newSupportEmployee.getEmployeeName());
-                                System.out.println("Ticket reassigned successfully.");
-                            }
-                            else
-                            {
-                                System.out.println("Ticket was not reassigned.");
-                            }  
-                    }
-                            
+                System.out.println("Old: \n Assigned To: "
+                                   + oldSupportEmployee.getEmployeeName());
+
+                if(oldSupportEmployee == newSupportEmployee)
+                {
+                    System.out.println("Cannot reassign to the same employee.");
                 }
                 else
                 {
-                    System.out.println("Cannot reassign");
-                }
-            
-            }
+                    if(department.equalsIgnoreCase(newSupportEmployee.getDepartment()))
+                    {
+                        boolean added = false;
 
-        }
-        else{
-            System.out.println("Employee is not a SUPPORT employee.");
-            System.out.println("Ticket was not reassigned.");
+                        for(int i = 0; i < newSupportEmployee.tickets.length; i++)
+                        {
+                            if(newSupportEmployee.tickets[i] == null)
+                            {
+                                newSupportEmployee.tickets[i] = ticket;
+                                added = true;
+                                break;
+                            }
+                        }
+
+                        if(added)
+                        {
+                            for(int i = 0; i < oldSupportEmployee.tickets.length; i++)
+                            {
+                                if(oldSupportEmployee.tickets[i] == ticket)
+                                {
+                                    oldSupportEmployee.tickets[i] = null;
+                                    break;
+                                }
+                            }
+
+                            ticket.assignedTo = newSupportEmployee;
+
+                            ticket.addHistory(
+                                "REASSIGNED",
+                                oldSupportEmployee.getEmployeeName()
+                                + " to "
+                                + newSupportEmployee.getEmployeeName()
+                            );
+
+                            System.out.println("New: \n Assigned To: "
+                                               + newSupportEmployee.getEmployeeName());
+
+                            System.out.println("Ticket reassigned successfully.");
+                        }
+                        else
+                        {
+                            System.out.println("New support employee ticket list is full.");
+                        }
+                    }
+                    else
+                    {
+                        System.out.println("Ticket was not reassigned.");
+                    }
+                }
+            }
+            else
+            {
+                System.out.println("Cannot reassign");
+            }
         }
     }
+    else
+    {
+        System.out.println("Employee is not a SUPPORT employee.");
+        System.out.println("Ticket was not reassigned.");
+    }
+}
     void viewTicketSummary(Employee employee)
     {
         boolean found=false;
@@ -161,7 +213,7 @@ class Manager {
         }
         else
         {
-            if(ticket.status.equals("CLOSED"))
+            if(ticket.status.equalsIgnoreCase("RESOLVED") || ticket.status.equals("CLOSED") )
             {
                 System.out.println("Closed ticket cannot be assigned");
             }
@@ -175,7 +227,7 @@ class Manager {
                 {
                     if(ticket.assignedTo==supportEmployee)
                     {
-                        System.out.println("ticket alresy assigned to same employee");
+                        System.out.println("Ticket already assigned to the same employee.");
                     }
                     else
                     {
@@ -194,7 +246,7 @@ class Manager {
             if(employee.tickets[i] != null)
             {
                 
-                if(employee.tickets[i].priority.equalsIgnoreCase("HIGH") || employee.tickets[i].priority.equals("CRITICAL"))
+                if(employee.tickets[i].priority.equalsIgnoreCase("HIGH") || employee.tickets[i].priority.equalsIgnoreCase("CRITICAL"))
                 {
                     employee.tickets[i].displaySummary();
                     found=true;
@@ -239,8 +291,10 @@ class Manager {
             System.out.println("2. View High/Critical Tickets");
             System.out.println("3. View Tickets By Status");
             System.out.println("4. Assign Ticket");
-            System.out.println("5. Reassign Ticket");
-            System.out.println("6. Exit");
+            System.out.println("5.Auto Assignment based on priority");
+            System.out.println("6. Reassign Ticket");
+            System.out.println("7. View Ticket History");
+            System.out.println("8. Exit");
             System.out.println("Enter choice:");
             int methodcalling=sc.nextInt();
             
@@ -296,6 +350,8 @@ class Manager {
             {
                 System.out.println("Enter Ticket ID: ");
                 int ticketId=sc.nextInt();
+                viewSupportTeam();
+                
                 System.out.println("Enter Support Employee ID: ");
                 int supportEmployeeId=sc.nextInt();
                 Employee support = findSupportEmployee(supportEmployeeId);
@@ -310,9 +366,25 @@ class Manager {
             }
             else if(methodcalling==5)
             {
+                System.out.println("enter ticket Id");
+                int ticketId=sc.nextInt();
+                Ticket ticket=findTicket(ticketId);
+                if(ticket!=null)
+                {
+
+                    prioritybased(ticket);
+                }
+                else
+                {
+                    System.out.println("Ticket not found");
+                }
+            }
+            else if(methodcalling==6)
+            {
                 System.out.println("===== REASSIGN TICKET =====");
                 System.out.println("Enter Ticket ID:");
                 int reassignTicketId=sc.nextInt();
+                viewSupportTeam();
                 System.out.println("Enter New Support Employee ID: ");
                 int reassignEmpId=sc.nextInt();
                 Ticket ticket = findTicket(reassignTicketId);
@@ -331,7 +403,24 @@ class Manager {
                 }
                
             }
-            else if(methodcalling==6)
+            else if(methodcalling == 7)
+                {
+                System.out.println("Enter Ticket ID:");
+                int ticketId = sc.nextInt();
+
+                Ticket ticket = findTicket(ticketId);
+
+                if(ticket == null)
+                {
+                    System.out.println("Ticket not found.");
+                }
+                else
+                {
+                    ticket.displayHistory();
+                }
+            }
+            
+            else if(methodcalling==8)
             {
                 break;
             }
@@ -345,13 +434,18 @@ class Manager {
                 System.out.println("please enter only numbers");
                 sc.nextLine();
             }
+            catch(NoSuchElementException e)
+            {
+                System.out.println("No more input available. Exiting...");
+                break;
+            }
         }
     }
     Employee findemployeebyId(int empid)
     {
         for(Employee emp:employee)
         {
-            if(emp != null && emp.getEmployeeId()== empid)
+            if(emp != null && emp.getEmployeeId()== empid && this.department.equalsIgnoreCase(emp.getDepartment()))
             {
                 return emp;
             }
@@ -438,7 +532,7 @@ class Manager {
         }
     }
     void viewAllEmployees()
-{
+    {
     boolean found = false;
 
     System.out.println("===== ALL EMPLOYEES =====");
@@ -465,20 +559,17 @@ void assignedTicket(Employee supportEmployee)
 
     for (Employee emp : employee)
     {
-        if (emp != null)
+        if (emp != null && this.department.equalsIgnoreCase(emp.getDepartment()))
         {
             for (Ticket ticket : emp.tickets)
             {
                 if (ticket != null && ticket.assignedTo != null)
                 {
-                   
-                        if (ticket.assignedTo == supportEmployee)
-                        {
-                            ticket.displayTicket();
-                            found = true;
-                        
-                        }
-                    
+                    if (ticket.assignedTo == supportEmployee)
+                    {
+                        ticket.displayTicket();
+                        found = true;
+                    }
                 }
             }
         }
@@ -493,11 +584,11 @@ Ticket findTicket(int ticketId)
 {
     for(Employee emp: employee)
         {
-            if(emp !=null)
+            if(emp !=null && this.department.equalsIgnoreCase(emp.getDepartment()))
             {
                 for(Ticket t:emp.tickets)
                 {
-                    if(t != null)
+                    if(t != null )
                     {
                         if(t.ticketId==ticketId)
                         {
@@ -511,29 +602,109 @@ Ticket findTicket(int ticketId)
 }
 void supportWorkLoad()
 {
-
-    for(Employee semp:supportTeam)
+    for(Employee semp : supportTeam)
     {
-        int tcount=0;
         if(semp != null)
         {
-            for(Employee emp:employee)
+            int activeTickets = 0;
+
+            for(Employee emp : employee)
             {
-                for(Ticket ticket:emp.tickets)
+                if(emp != null)
                 {
-                    
-                    if(ticket != null && !ticket.status.equals("CLOSED"))
+                    for(Ticket ticket : emp.tickets)
                     {
-                        if(ticket.assignedTo ==semp)
+                        if(ticket != null &&
+                           !ticket.status.equals("CLOSED") &&
+                           ticket.assignedTo == semp)
                         {
-                            tcount++;
+                            activeTickets++;
                         }
                     }
                 }
             }
-            System.out.println(semp.getEmployeeName() +" -> "+tcount);
+
+            int workload = calculateWorkload(semp);
+
+            System.out.println(semp.getEmployeeName()+ " -> Active Tickets: " + activeTickets+ ", Workload Points: " + workload);
         }
-        
     }
 }
+int getPoints(String priority)
+{
+    if(priority.equals("LOW"))
+    {
+        return 1;
+    }
+    else if(priority.equals("MEDIUM"))
+    {
+            return 2;
+    }
+    else if(priority.equals("HIGH"))
+    {
+        return 3;
+
+    }
+    else if(priority.equals("CRITICAL"))
+    {
+        return 5;
+    }
+  
+  
+    return 0;
+}
+int calculateWorkload(Employee employeeSupport)
+{
+    int totalWorkload=0;
+    if(employeeSupport.tickets == null)
+    {
+        return 0;
+    }
+    for(Ticket ticket:employeeSupport.tickets)
+    {
+        if(ticket != null && ticket.status != null)
+        {
+              if(ticket.status.equals("ASSIGNED") || ticket.status.equals("IN_PROGRESS"))
+                {
+                    String priority=ticket.priority;
+                    totalWorkload+=getPoints(priority);
+                }
+        }
+    }
+    return totalWorkload;
+}
+Employee leastWorkLoad(Ticket ticket)
+{
+    int workload=0;
+    int least=Integer.MAX_VALUE;
+    Employee bestSupport=null; 
+    for(Employee supportEmployee:supportTeam)
+    {
+        if(supportEmployee != null)
+        {
+            workload=calculateWorkload(supportEmployee);
+            if(workload<least)
+            {
+                least=workload;
+                bestSupport= supportEmployee;
+            }
+        }
+    }
+    return bestSupport;
+    
+}
+void prioritybased(Ticket ticket)
+{
+    Employee emp=leastWorkLoad(ticket);
+    if(emp!=null)
+    {
+        assignTicket(ticket, emp);
+        
+    }
+    else
+    {
+        System.out.println("no least workload employee");
+    }
+}
+
 }
