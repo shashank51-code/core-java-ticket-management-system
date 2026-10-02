@@ -1,4 +1,6 @@
+
 import java.util.InputMismatchException;
+import java.util.Scanner;
 class User {
 
    
@@ -535,5 +537,117 @@ class User {
             System.out.println("Invalid username or password");
         }
     }
+    public static void loginFromDatabase(Application app) {
+
+    Scanner sc = app.sc;
+
+    System.out.print("Enter username: ");
+    String username = sc.next();
+
+    System.out.print("Enter password: ");
+    String password = sc.next();
+
+    boolean valid =
+            UserDAO.login(username, password);
+
+    if (!valid) {
+
+        return;
+    }
+
+    int employeeId =
+            UserDAO.getEmployeeIdByLogin(
+                    username,
+                    password);
+
+    if (employeeId == -1) {
+
+        System.out.println(
+                "Employee profile not found.");
+
+        return;
+    }
+
+    Employee employee =
+            EmployeeDAO.findById(employeeId);
+    if (employee.getRole().equalsIgnoreCase("EMPLOYEE")) {
+
+    showDatabaseEmployeeMenu(app, employee);
+
+}
+    if (employee == null) {
+
+        System.out.println(
+                "Employee profile not found.");
+
+        return;
+    }
+
+    System.out.println(
+            "Welcome, "
+            + employee.getEmployeeName());
+
+    System.out.println(
+            "Role: "
+            + employee.getRole());
+
+            if (employee.getRole()
+        .equalsIgnoreCase("EMPLOYEE")) {
+
+    showDatabaseEmployeeMenu(app, employee);
+}
+}
+
+
+public static void showDatabaseEmployeeMenu(
+        Application app,
+        Employee employee) {
+
+    Scanner sc = app.sc;
+
+    while (true) {
+
+        System.out.println();
+        System.out.println("==============================");
+        System.out.println("       EMPLOYEE MENU");
+        System.out.println("==============================");
+
+        System.out.println("1. View My Tickets");
+        System.out.println("2. View Ticket By ID");
+        System.out.println("3. Logout");
+
+        System.out.print("Enter your choice: ");
+
+        int choice = sc.nextInt();
+
+        if (choice == 1) {
+
+            TicketDAO.getMyTickets(
+                    employee.getEmployeeId());
+
+        } else if (choice == 2) {
+
+            System.out.print(
+                    "Enter ticket ID: ");
+
+            int ticketId = sc.nextInt();
+
+            TicketDAO.getTicketById(ticketId);
+
+        } else if (choice == 3) {
+
+            System.out.println(
+                    "Logged out successfully.");
+
+            break;
+
+        } else {
+
+            System.out.println(
+                    "Invalid choice.");
+        }
+    }
+}
+
 
 }

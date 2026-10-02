@@ -1,3 +1,4 @@
+
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -649,8 +650,7 @@ int getPoints(String priority)
     {
         return 5;
     }
-  
-  
+
     return 0;
 }
 int calculateWorkload(Employee employeeSupport)

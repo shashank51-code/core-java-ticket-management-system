@@ -23,7 +23,7 @@ class Application
             int input=sc.nextInt();
             if(input==1)
             {
-                new User(0, "", "").login(x);
+                User.loginFromDatabase(x);
             }
             else if(input==2)
             {
